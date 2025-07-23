@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mindful Mornings: Interactive SEL Bell Ringers & Writing Prompts</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- THEME COLOR & FONT VARIABLES --- */
+        :root {
+            --font-body: 'Lato', sans-serif;
+            --font-heading: 'Nunito', sans-serif;
+        }
+
+        /* 1. Default Theme: Modern Calm Colors (Updated Palette) */
+        .theme-calm-colors {
+            --bg-color-start: #fef7f4; --bg-color-end: #f2e8e1;
+            --text-color: #5d5c61; --header-color: #d68a7c;
+            --subheader-color: #8a7967; --card-bg: #FFFFFF;
+            --card-text: #8a7967; --card-hover-bg: #82c0cc;
+            --card-hover-text: #FFFFFF; --card-shadow: rgba(0, 0, 0, 0.08);
+            --button-bg: #f2b39b; --button-hover: #e9a285;
+            --button-secondary-bg: #82c0cc; --button-secondary-hover: #70b1be;
+            --button-edit-bg: #d68a7c; --button-edit-hover: #c97b6c;
+            --completed-color: #82c0cc;
+            --progress-bar-bg: #e9e2dd;
+            --progress-bar-gradient: linear-gradient(90deg, var(--button-secondary-bg), var(--button-bg));
+            --projector-bg-pattern: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d68a7c' fill-opacity='0.07'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        /* 2. Bright Rainbow Theme (Updated Palette) */
+        .theme-bright-rainbow {
+            --bg-color-start: #f0f8ff; --bg-color-end: #f0fff0;
+            --text-color: #333; --header-color: #ff4b8d;
+            --subheader-color: #00a8a8; --card-bg: #FFFFFF;
+            --card-text: #343434; --card-hover-bg: #ffd166;
+            --card-hover-text: #343434; --card-shadow: rgba(0, 0, 0, 0.1);
+            --button-bg: #06d6a0; --button-hover: #05b385;
+            --button-secondary-bg: #118ab2; --button-secondary-hover: #0e7290;
+            --button-edit-bg: #ef476f; --button-edit-hover: #d62828;
+            --completed-color: #06d6a0;
+            --progress-bar-bg: #e0f0f8;
+            --progress-bar-gradient: linear-gradient(90deg, var(--button-secondary-bg), var(--button-bg));
+            --projector-bg-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='49' viewBox='0 0 28 49'%3E%3Cg fill-rule='evenodd'%3E%3Cg id='hexagons' fill='%23118ab2' fill-opacity='0.08' fill-rule='nonzero'%3E%3Cpath d='M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v12.7l10.99 6.34 11-6.35V17.9l-11-6.34L3 17.9zM0 15l12.99 7.5V30L0 22.5zM15 0l13 7.5v15L15 30V15L2 7.5z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        /* 3. Chalkboard Theme */
+        .theme-chalkboard {
+            --bg-color-start: #434343; --bg-color-end: #212121;
+            --text-color: #F1F1F1; --header-color: #F2CC8F;
+            --subheader-color: #81B29A; --card-bg: #505355;
+            --card-text: #FFFFFF; --card-hover-bg: #81B29A;
+            --card-hover-text: #FFFFFF; --card-shadow: rgba(0, 0, 0, 0.2);
+            --button-bg: #81B29A; --button-hover: #6A9E8A;
+            --button-secondary-bg: #E07A5F; --button-secondary-hover: #D46A4F;
+            --button-edit-bg: #F2CC8F; --button-edit-hover: #E9C46A;
+            --completed-color: #A9D18E;
+            --progress-bar-bg: #505355;
+            --progress-bar-gradient: linear-gradient(90deg, #E07A5F, #F2CC8F);
+            --projector-bg-pattern: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%2381B29A' fill-opacity='0.1' fill-rule='evenodd'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E");
+        }
+        
+        .theme-chalkboard .prompt-item { border-bottom-color: #757575; }
+        .theme-chalkboard .modal-content { color: #333; }
+        .theme-chalkboard .projector-prompt { color: var(--header-color); }
+        .theme-chalkboard #timer-display {
+            color: #000;
+            background: rgba(242, 204, 143, 0.8);
+        }
+        .theme-chalkboard .timer-finished {
+            animation: chalkboard-timer-flash 0.5s 6;
+        }
+        @keyframes chalkboard-timer-flash {
+            0%, 100% { background-color: rgba(224, 122, 95, 0.8); }
+            50% { background-color: rgba(242, 204, 143, 0.8); }
+        }
+
+
+        /* General Body & Font Styling */
+        body {
+            font-family: var(--font-body);
+            background: linear-gradient(135deg, var(--bg-color-start), var(--bg-color-end));
+            color: var(--text-color); margin: 0; padding: 20px;
+            text-align: center; transition: background 0.3s;
+            min-height: 100vh; overflow-x: hidden;
+            padding-top: 80px;
+        }
+
+        h1, h2, button { font-family: var(--font-heading); }
+        h1 { color: var(--header-color); font-weight: 800; margin-top: 0; font-size: 2.2em; line-height: 1.2; }
+        h2 { color: var(--subheader-color); font-weight: 700; }
+        p.subtitle { display: none; } /* Hidden as per request */
+        #grid-view-container h2 { display: none; } /* Hidden as per request */
+
+        /* Banner Image Styling */
+        .banner-image {
+            max-width: 450px;
+            width: 90%;
+            height: auto;
+            border-radius: 15px;
+            margin: 0 auto 15px auto; /* Center it and add space below */
+            display: block;
+        }
+
+        /* Progress Tracker Styling */
+        .progress-container {
+            max-width: 600px;
+            margin: 20px auto 40px auto;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .progress-bar-wrapper {
+            flex-grow: 1;
+            height: 20px;
+            background-color: var(--progress-bar-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%; /* Default state, updated by JS */
+            border-radius: 10px;
+            background: var(--progress-bar-gradient);
+            transition: width 0.6s ease-in-out;
+        }
+        .progress-label {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            color: var(--subheader-color);
+            font-size: 0.9em;
+            white-space: nowrap;
+        }
+        
+        /* Top Controls */
+        .top-controls-wrapper {
+            position: absolute; top: 20px; left: 20px; right: 20px;
+            z-index: 10; display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .top-controls-left, .top-controls-right {
+            display: flex; gap: 15px; align-items: center;
+        }
+        select {
+            padding: 8px; border-radius: 5px; border: 1px solid #ccc;
+            font-family: var(--font-heading);
+        }
+
+        /* View Containers & Animations */
+        .view { display: none; animation-duration: 0.5s; animation-fill-mode: both; }
+        .view.active { display: block; }
+
+        @keyframes slide-in { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slide-out { from { transform: translateX(0); opacity: 1; } to { transform: translateX(-100%); opacity: 0; } }
+        @keyframes slide-in-rev { from { transform: translateX(-100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        .view.is-entering { animation-name: slide-in; }
+        .view.is-exiting { animation-name: slide-out; }
+
+        /* Grid View Styling */
+        #grid-view-container { max-width: 1000px; margin: 20px auto; }
+        #trait-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px; }
+
+        .trait-card {
+            background-color: var(--card-bg); color: var(--card-text);
+            padding: 20px 10px; border-radius: 8px;
+            box-shadow: 0 4px 6px var(--card-shadow); font-weight: 700; cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s, border 0.2s, background-color 0.2s, color 0.2s, opacity 0.3s;
+            display: flex; align-items: center; justify-content: center; min-height: 50px;
+            position: relative;
+        }
+        .trait-card:hover {
+            transform: translateY(-5px); box-shadow: 0 6px 12px var(--card-shadow);
+            background-color: var(--card-hover-bg); color: var(--card-hover-text);
+        }
+        .trait-card:active { transform: translateY(-2px) scale(0.98); box-shadow: 0 2px 4px var(--card-shadow); }
+        
+        .trait-card.completed { opacity: 0.6; }
+        .trait-card.completed .checkmark { opacity: 1; }
+        .checkmark {
+            position: absolute; top: 5px; right: 5px;
+            width: 20px; height: 20px;
+            fill: var(--completed-color);
+            opacity: 0; transition: opacity 0.3s;
+        }
+
+        /* Weekly View Styling */
+        #weekly-view-container {
+            max-width: 800px; margin: 20px auto; text-align: left;
+            background: var(--card-bg); color: var(--text-color);
+            padding: 20px 30px; border-radius: 8px; box-shadow: 0 4px 6px var(--card-shadow);
+        }
+        .weekly-header { display: flex; justify-content: space-between; align-items: center; }
+        .prompt-item { padding: 15px 0; border-bottom: 1px solid #e0e0e0; }
+        .prompt-item:last-child { border-bottom: none; }
+        .prompt-text { font-size: 1.1em; margin-bottom: 10px; line-height: 1.5; }
+        .prompt-buttons button { margin-right: 10px; }
+        .prompt-editor {
+            width: 100%; box-sizing: border-box; padding: 10px;
+            font-family: var(--font-body); font-size: 1em;
+            border-radius: 5px; border: 1px solid #ccc;
+            margin-bottom: 10px; resize: vertical; min-height: 80px;
+        }
+        
+        /* Completion Toggle Switch */
+        .completion-toggle, .settings-toggle { display: flex; align-items: center; gap: 10px; font-weight: 700; }
+        .toggle-switch { position: relative; display: inline-block; width: 50px; height: 28px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 28px; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--completed-color); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        /* General Button Styling */
+        button {
+            background-color: var(--button-bg); color: white; border: none; padding: 10px 15px;
+            border-radius: 5px; cursor: pointer; font-size: 0.9em;
+            transition: background-color 0.2s, transform 0.2s; font-weight: 700;
+        }
+        button:hover { background-color: var(--button-hover); transform: scale(1.05); }
+        button:active { transform: scale(1); }
+        button.secondary { background-color: var(--button-secondary-bg); }
+        button.secondary:hover { background-color: var(--button-secondary-hover); }
+        button.edit { background-color: var(--button-edit-bg); }
+        button.edit:hover { background-color: var(--button-edit-hover); }
+        button.back-button { background-color: #757575; margin-bottom: 20px; }
+        button.back-button:hover { background-color: #616161; transform: scale(1.05); }
+        button.primary-action-button { background-color: var(--button-bg); padding: 15px 25px; font-size: 1.1em; margin-top: 20px; }
+        button.primary-action-button:hover { background-color: var(--button-hover); transform: scale(1.05); }
+
+        /* Modal Styling */
+        #projector-view, #reset-modal, #settings-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            align-items: center; justify-content: center; z-index: 1000;
+        }
+        #projector-view.active, #reset-modal.active, #settings-modal.active { display: flex; animation-name: fade-in; }
+        @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+        #projector-view.is-exiting, #reset-modal.is-exiting, #settings-modal.is-exiting { animation-name: fade-out; }
+        @keyframes fade-out { from { opacity: 1; } to { opacity: 0; } }
+
+        .projector-content {
+            background-color: var(--bg-color-start);
+            background-image: var(--projector-bg-pattern);
+            padding: 50px;
+            border-radius: 10px;
+            max-width: 80%;
+            width: 900px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 50px;
+            border-radius: 10px;
+            max-width: 80%;
+            width: 500px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            color: #333;
+        }
+        .modal-content p { margin-bottom: 20px; }
+        
+        .projector-content:fullscreen {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            width: 100%; height: 100%; max-width: 100%; border-radius: 0;
+        }
+        .projector-content:fullscreen .projector-prompt { padding: 0 5vw; }
+        
+        .projector-prompt {
+            font-family: var(--font-heading); font-weight: 800;
+            font-size: 3em; color: var(--text-color); line-height: 1.4;
+        }
+        .close-button {
+            position: absolute; top: 15px; right: 25px; font-size: 2.5em;
+            cursor: pointer; color: #999;
+        }
+        .close-button:hover { color: #333; }
+        
+        .projector-bottom-bar {
+            position: absolute; bottom: 15px; left: 15px; right: 15px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .fullscreen-button {
+            background: rgba(0,0,0,0.2); border: none; border-radius: 5px; 
+            cursor: pointer; padding: 8px; transition: background 0.2s;
+        }
+        .fullscreen-button:hover { background: rgba(0,0,0,0.4); }
+        .fullscreen-button svg { width: 24px; height: 24px; fill: #fff; display: block; }
+        
+        /* Timer Styles */
+        #timer-display {
+            position: absolute; top: 20px; left: 25px; /* Moved to top-left */
+            font-family: var(--font-heading); font-size: 2.5em;
+            color: #333; background: rgba(255,255,255,0.7);
+            padding: 5px 15px; border-radius: 8px;
+        }
+        .timer-finished {
+            animation: timer-flash 0.5s 6; /* Updated animation */
+        }
+        @keyframes timer-flash {
+            0%, 100% { background-color: rgba(255, 107, 107, 0.8); }
+            50% { background-color: rgba(255,255,255,0.7); }
+        }
+
+        #timer-controls {
+            display: flex; align-items: center; gap: 10px;
+            background: rgba(0,0,0,0.2);
+            padding: 8px; border-radius: 5px;
+        }
+        #timer-controls label { font-family: var(--font-body); color: white; font-weight: bold; }
+        #timer-controls input {
+            width: 50px; padding: 5px; border-radius: 4px; border: none;
+            font-family: var(--font-heading); text-align: center;
+        }
+        #timer-controls button {
+            padding: 5px 10px; font-size: 0.8em;
+        }
+        
+        /* Settings Modal Styles */
+        .settings-section {
+            text-align: left;
+            border-top: 1px solid #e0e0e0;
+            padding: 20px 10px;
+        }
+        .settings-section:first-of-type {
+            border-top: none;
+        }
+        .settings-section h3 {
+            margin-top: 0;
+            color: var(--header-color);
+        }
+        .settings-section p {
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+        .settings-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .settings-controls input[type="number"] {
+            width: 60px;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        /* --- Fullscreen Styles --- */
+        #main-fullscreen-btn {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 999; /* Below modals, above other content */
+        }
+        /* Hide top controls when main app is fullscreen */
+        body.main-fullscreen-active .top-controls-wrapper {
+            display: none;
+        }
+        /* Hide main fullscreen button when any modal is active */
+        body.modal-is-active #main-fullscreen-btn {
+            display: none;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) { #trait-grid { grid-template-columns: repeat(4, 1fr); } }
+        @media (max-width: 768px) {
+            #trait-grid { grid-template-columns: repeat(3, 1fr); }
+            .projector-prompt { font-size: 2.2em; }
+            body { padding-top: 140px; } /* Increased padding */
+            .top-controls-wrapper { flex-direction: column; align-items: center; gap: 15px; }
+        }
+        @media (max-width: 480px) {
+            #trait-grid { grid-template-columns: repeat(2, 1fr); }
+            h1 { font-size: 1.8em; }
+            .projector-prompt { font-size: 1.8em; }
+            #weekly-view-container { padding: 15px; }
+            #timer-display { font-size: 1.8em; }
+            .projector-bottom-bar { flex-direction: column; gap: 10px; }
+            .settings-controls { flex-direction: column; align-items: flex-start; }
+            .progress-container { flex-direction: column; gap: 10px; }
+            #main-fullscreen-btn { bottom: 15px; right: 15px; }
+        }
+    </style>
+</head>
+<body class="theme-calm-colors">
+
+    <button class="fullscreen-button" id="main-fullscreen-btn" onclick="toggleMainFullscreen()" title="Toggle Fullscreen">
+        <svg id="main-fullscreen-icon-open" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+        <svg id="main-fullscreen-icon-close" style="display:none;" viewBox="0 0 24 24"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>
+    </button>
+    
+    <div class="top-controls-wrapper">
+        <div class="top-controls-left">
+            <div>
+                <label for="theme-selector">Theme:</label>
+                <select id="theme-selector" onchange="changeTheme()">
+                    <option value="calm-colors">Modern Calm Colors</option>
+                    <option value="bright-rainbow">Bright Rainbow</option>
+                    <option value="chalkboard">Chalkboard</option>
+                </select>
+            </div>
+            <button class="secondary" id="settings-btn">Settings</button>
+            <button class="secondary" onclick="showResetModal()">Reset All Prompts</button>
+        </div>
+        <div class="top-controls-right">
+            <div>
+                <label for="grade-selector">Grade Level:</label>
+                <select id="grade-selector" onchange="handleGradeChange()">
+                    <option value="k-2">Primary (K-2)</option>
+                    <option value="3-5">Elementary (3-5)</option>
+                    <option value="6-8">Middle School (6-8)</option>
+                    <option value="9-12">High School (9-12)</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <img src="https://mindful-morning.netlify.app/assets/mindful_logo.png" alt="Mindful Mornings Logo" class="banner-image">
+    <h1>SEL Bell Ringers & Writing Prompts</h1>
+    <p class="subtitle" id="grade-subtitle"></p>
+
+    <div id="grid-view-container" class="view active">
+        <div class="progress-container">
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar-fill" id="progress-bar-fill"></div>
+            </div>
+            <span class="progress-label" id="progress-label">0% of traits completed</span>
+        </div>
+        
+        <h2>Choose a Character Trait (36 Weeks)</h2>
+        <div id="trait-grid"></div>
+    </div>
+
+    <div id="weekly-view-container" class="view">
+        <button class="back-button" onclick="showGridView()">&#8592; Back to All Traits</button>
+        <div class="weekly-header">
+            <h2 id="weekly-trait-title"></h2>
+            <div id="completion-toggle-container"></div>
+        </div>
+        <div id="prompt-list"></div>
+        <button class="primary-action-button" id="download-week-btn">Download All 5 Prompts for the Week (PDF)</button>
+    </div>
+
+    <div id="projector-view" class="view">
+        <div class="projector-content" onclick="event.stopPropagation()">
+            <span class="close-button" onclick="hideProjectorView()">&times;</span>
+            <div id="timer-display">00:00</div>
+            <p id="projector-prompt-text" class="projector-prompt"></p>
+            <div class="projector-bottom-bar">
+                <div id="timer-controls">
+                    <label for="timer-minutes">M:</label>
+                    <input type="number" id="timer-minutes" value="5" min="0" max="59">
+                    <label for="timer-seconds">S:</label>
+                    <input type="number" id="timer-seconds" value="0" min="0" max="59">
+                    <button id="timer-start-pause">Start</button>
+                    <button id="timer-reset">Reset</button>
+                </div>
+                <button class="fullscreen-button" onclick="toggleFullscreen()" title="Toggle Fullscreen">
+                    <svg id="fullscreen-icon-open" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+                    <svg id="fullscreen-icon-close" style="display:none;" viewBox="0 0 24 24"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="reset-modal" class="view">
+        <div class="modal-content">
+            <h2>Are you sure?</h2>
+            <p>This will permanently delete all your custom edits and restore the original prompts for all grade levels. This action cannot be undone.</p>
+            <button class="primary-action-button" onclick="confirmReset()">Yes, Reset Everything</button>
+            <button class="back-button" onclick="hideResetModal()">Cancel</button>
+        </div>
+    </div>
+
+    <div id="settings-modal" class="view">
+        <div class="modal-content">
+            <span class="close-button" onclick="hideSettingsModal()">&times;</span>
+            <h2>Settings</h2>
+            
+            <div class="settings-section">
+                <h3>Startup Settings</h3>
+                <p>Choose the grade level the application will load by default.</p>
+                <div class="settings-controls">
+                    <label for="default-grade-selector">Default Grade Level:</label>
+                    <select id="default-grade-selector">
+                        <option value="k-2">Primary (K-2)</option>
+                        <option value="3-5">Elementary (3-5)</option>
+                        <option value="6-8">Middle School (6-8)</option>
+                        <option value="9-12">High School (9-12)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3>Master Timer</h3>
+                <p>Set a default time for all prompts when displayed in fullscreen mode.</p>
+                <div class="settings-controls">
+                    <label for="master-timer-minutes">Minutes:</label>
+                    <input type="number" id="master-timer-minutes" min="0" max="59">
+                    <label for="master-timer-seconds">Seconds:</label>
+                    <input type="number" id="master-timer-seconds" min="0" max="59">
+                </div>
+                <div class="settings-controls" style="margin-top: 15px;">
+                    <label class="settings-toggle">
+                        <span>Auto-start timer on display</span>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="master-timer-autostart">
+                            <span class="slider"></span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3>Data Management</h3>
+                <p>Save your edits and completion history to a file, or import them from a backup.</p>
+                <div class="settings-controls">
+                    <button id="export-data-btn">Export Data</button>
+                    <button id="import-data-btn" class="secondary">Import Data</button>
+                    <input type="file" id="import-file-input" style="display: none;" accept=".json">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { jsPDF } = window.jspdf;
+        if (typeof jsPDF === 'undefined') {
+            alert("Error: The PDF generation library (jsPDF) could not be loaded. Please check your internet connection and try again.");
+        }
+
+        const APP_VERSION = "1.3"; 
+
+        // --- MASTER DATA STRUCTURE FOR ALL GRADE BANDS ---
+        const allDefaultPrompts = {
+            'k-2': [
+                { trait: "Empathy", isCompleted: false, prompts: ["If a friend falls down, what can you do to help?", "Draw a picture of a happy face and a sad face. What makes them different?", "How can you be a good listener when a friend is talking?", "Think of a time someone shared a toy with you. How did it make you feel?", "What does it mean to be gentle with a pet?"] },
+                { trait: "Responsibility", isCompleted: false, prompts: ["What is one job you have at home? Why is it important?", "How do you help keep our classroom clean?", "What happens if you forget to put your toys away?", "Why is it important to put the cap back on a marker?", "Draw a picture of you being responsible at school."] },
+                { trait: "Respect", isCompleted: false, prompts: ["What does it mean to take turns?", "How can you show respect to your teacher?", "Why shouldn't we talk when someone else is talking?", "If a friend builds a block tower, why is it respectful not to knock it down?", "What are 'nice words' you can use with your friends?"] },
+                { trait: "Kindness", isCompleted: false, prompts: ["What is one kind thing you can say to someone today?", "Draw a picture of you sharing with a friend.", "How does it feel when someone is kind to you?", "What is a 'bucket filler'?", "If you see someone is sad, what is a kind thing to do?"] },
+                { trait: "Honesty", isCompleted: false, prompts: ["What does it mean to tell the truth?", "If you spill your juice by accident, what is the honest thing to do?", "Why is it important to tell the truth even if you might get in trouble?", "How does it feel when a friend is not honest with you?", "What is the difference between telling a story and telling a lie?"] },
+                { trait: "Perseverance", isCompleted: false, prompts: ["Think of something hard to do, like tying your shoes. What can you do if you can't do it yet?", "If you are building with blocks and they fall, what should you do?", "What does 'try, try again' mean?", "Draw a picture of you working hard on something.", "What can you say to a friend who wants to give up?"] },
+                { trait: "Courage", isCompleted: false, prompts: ["What does it mean to be brave?", "Think of a time you were a little scared but did something anyway.", "Is it okay to be scared sometimes? Why?", "How can you be brave when trying a new food?", "Who is a brave person you know?"] },
+                { trait: "Self-Control", isCompleted: false, prompts: ["What does it mean to have 'listening ears'?", "If you feel very excited, what can you do instead of shouting in the classroom?", "Why is it important to keep your hands to yourself?", "What does it look like to wait patiently in line?", "If you feel angry, what is a safe way to calm down?"] },
+                { trait: "Gratitude", isCompleted: false, prompts: ["What is one thing you are thankful for today?", "Draw a picture of someone who helps you.", "What are two words you can say to show you are grateful?", "Name a favorite toy you are thankful to have.", "How can you say 'thank you' without using words?"] },
+                { trait: "Integrity", isCompleted: false, prompts: ["What does it mean to do the right thing?", "If no one is watching, is it still important to follow the rules? Why?", "What does it mean to 'play fair' in a game?", "Why is it important to be the same person at school and at home?", "Draw a picture of a superhero doing the right thing."] },
+                { trait: "Cooperation", isCompleted: false, prompts: ["What does it mean to work together?", "If you and a friend both want to use the same crayon, how can you cooperate?", "What is a job that is easier to do with a partner?", "Draw a picture of you and a friend playing together.", "Why is it important for a team to cooperate?"] },
+                { trait: "Resilience", isCompleted: false, prompts: ["If you make a mistake on your paper, what can you do?", "What does it mean to 'bounce back' when something sad happens?", "How can a hug help you feel better?", "If you feel sad, is it okay to cry? What can you do after?", "Think of a time you felt better after being sad."] },
+                { trait: "Optimism", isCompleted: false, prompts: ["What does it mean to look on the bright side?", "If it is a rainy day, what is one fun thing you can still do inside?", "What is something you are looking forward to?", "How can a smile make your day better?", "Draw a picture of a sunny day."] },
+                { trait: "Curiosity", isCompleted: false, prompts: ["What is something you wonder about?", "Why is it good to ask questions?", "What is one new thing you learned this week?", "If you could ask an animal a question, what would you ask?", "Draw a picture of something you want to learn more about."] },
+                { trait: "Fairness", isCompleted: false, prompts: ["What does it mean for a game to be fair?", "If there are 3 cookies and 2 friends, what is a fair way to share?", "Why is it important for everyone to get a turn?", "How does it feel when something is not fair?", "Draw a picture of people playing a game fairly."] },
+                { trait: "Forgiveness", isCompleted: false, prompts: ["What can you say if you accidentally bump into a friend?", "What does 'I'm sorry' mean?", "If a friend says sorry, what can you say back?", "How does it feel when a friend forgives you?", "Is it okay to make mistakes? What should we do after?"] },
+                { trait: "Humility", isCompleted: false, prompts: ["If you are good at drawing, what can you say if someone tells you your picture is nice?", "Is it okay to let someone else be first in line?", "What does it mean to be a good winner in a a game?", "How can you learn from your friends?", "Why is it important to say 'good game' to everyone?"] },
+                { trait: "Patience", isCompleted: false, prompts: ["What does it mean to wait for your turn?", "What can you do while you are waiting in line?", "Why is it important to be patient when a friend is learning something new?", "Draw a picture of you waiting patiently for something.", "How does it feel when you have to wait for a long time?"] },
+                { trait: "Generosity", isCompleted: false, prompts: ["What does it mean to share?", "Draw a picture of you giving something to a friend.", "Can you be generous with your words? How?", "How does it feel to give someone a gift you made?", "What is one thing you can share with your family today?"] },
+                { trait: "Leadership", isCompleted: false, prompts: ["What does it mean to be a line leader?", "How can you be a good example for your friends?", "What does a good leader do?", "If your friends are arguing, what could a leader do to help?", "Draw a picture of a good leader."] },
+                { trait: "Citizenship", isCompleted: false, prompts: ["What does it mean to be a good citizen in our classroom?", "How can you help keep our school clean?", "Why do we have classroom rules?", "Draw a picture of you following a school rule.", "What is one way to help your community?"] },
+                { trait: "Compassion", isCompleted: false, prompts: ["If you see someone crying, what can you do?", "What does it mean to care about others' feelings?", "How can you show compassion to a new student?", "Draw a picture of being kind to an animal.", "What are 'caring words'?"] },
+                { trait: "Dependability", isCompleted: false, prompts: ["What does it mean if a friend can count on you?", "If you promise to help a friend, what should you do?", "Why is it important to do what you say you will do?", "Who is someone you can always depend on?", "How can your teacher depend on you?"] },
+                { trait: "Grit", isCompleted: false, prompts: ["What does it mean to not give up?", "If you are learning to read a hard word, what can you do?", "Draw a picture of you trying your best.", "Why is it important to finish your work?", "How does it feel when you finally do something that was hard?"] },
+                { trait: "Initiative", isCompleted: false, prompts: ["If you see trash on the floor, what can you do without being asked?", "What does it mean to be a 'helper'?", "Can you think of one thing you can do to help in the classroom today?", "Why is it good to do things without being told?", "Draw a picture of you being a helper."] },
+                { trait: "Mindfulness", isCompleted: false, prompts: ["Close your eyes and listen. What sounds do you hear?", "Take a big, slow breath in and out. How does that feel?", "Look closely at a leaf or a flower. What do you see?", "How can being quiet help your body feel calm?", "Think about your favorite color. What does it make you feel like?"] },
+                { trait: "Problem-Solving", isCompleted: false, prompts: ["If you can't reach a toy, what can you do?", "Your crayon broke. What is one way to solve that problem?", "If you and a friend want to play with the same toy, what could you do?", "What does it mean to ask for help?", "Draw a picture of you solving a small problem."] },
+                { trait: "Growth Mindset", isCompleted: false, prompts: ["What can you say instead of 'I can't do it'?", "How does your brain get stronger?", "Is it okay to make mistakes when you are learning? Why?", "What is something new you want to learn?", "Draw a picture of your brain growing."] },
+                { trait: "Self-Awareness", isCompleted: false, prompts: ["What is something that makes you happy?", "What is something that makes you feel sad?", "What are you good at?", "Draw a picture of yourself. What color are your eyes?", "What is your favorite thing to do at school?"] },
+                { trait: "Self-Discipline", isCompleted: false, prompts: ["Why is it important to listen to the teacher the first time?", "What does it mean to 'stay on task'?", "How can you remember to raise your hand before you speak?", "Draw a picture of you doing your morning work quietly.", "What is one choice you can make to have a good day?"] },
+                { trait: "Tolerance", isCompleted: false, prompts: ["Are all people the same? Is that okay?", "What is something special about your friend?", "How can we be friends with people who look different from us?", "What is something new you can learn from a friend?", "Draw a picture of many different friends playing together."] },
+                { trait: "Trustworthiness", isCompleted: false, prompts: ["If a friend tells you a secret, what should you do?", "What does it mean to be a good friend?", "Why is it important to give back a toy that you borrowed?", "How can people know they can trust you?", "Draw a picture of two friends who trust each other."] },
+                { trait: "Wisdom", isCompleted: false, prompts: ["Who is a grown-up you can ask for help?", "What is one good rule to remember at school?", "Why is it wise to look both ways before crossing the street?", "What is one thing you learned that can help a friend?", "What is the wisest thing a character in a story did?"] },
+                { trait: "Sportsmanship", isCompleted: false, prompts: ["What do you say to the other team after a game?", "Is it more important to have fun or to win? Why?", "How can you be a good sport if you lose?", "What does it mean to cheer for your teammates?", "Draw a picture of two teams shaking hands."] },
+                { trait: "Zest", isCompleted: false, prompts: ["What is your favorite thing to do at recess?", "What makes you feel excited and happy?", "Draw a picture of you playing with lots of energy.", "How can you make a boring job more fun?", "What is something you are excited to do today?"] },
+                { trait: "Creativity", isCompleted: false, prompts: ["If you could invent a new toy, what would it do?", "Draw a picture of a silly animal that no one has ever seen before.", "Use blocks to build something from your imagination.", "What new color would you make? What would you name it?", "Think of a new way to play with a ball."] }
+            ],
+            '3-5': [ 
+                { trait: "Empathy", isCompleted: false, prompts: ["Describe a time you saw someone being left out. What could you have done to make them feel included?", "Think about a character from a book or movie who was misunderstood. How do you think they felt? Why?", "If your best friend was very upset about something, what are three things you could do or say to show you care?", "What does the phrase 'put yourself in someone else's shoes' mean to you? Give an example.", "Why is it important to listen carefully when someone is telling you about their problems?"] }, 
+                { trait: "Responsibility", isCompleted: false, prompts: ["What are two responsibilities you have at home and two you have at school? Why are they important?", "Describe a time you forgot to do something you were responsible for. What happened, and what did you learn?", "Is being responsible just about chores? What other kinds of responsibilities do people have?", "Imagine your group project is due tomorrow and one person hasn't done their part. What is the responsible thing to do?", "How does being responsible help you build trust with your parents, teachers, and friends?"] }, 
+                { trait: "Respect", isCompleted: false, prompts: ["What is the difference between respecting a person and respecting an opinion you disagree with?", "How can you show respect to school property, like library books or playground equipment?", "Think of an adult you respect. What qualities do they have that earned your respect?", "Someone on your team makes a mistake during a game. How can you show them respect even if you are disappointed?", "Why is it important to use respectful language both online and in person?"] }, 
+                { trait: "Kindness", isCompleted: false, prompts: ["Describe a 'random act of kindness' you have either done for someone or someone has done for you. How did it feel?", "Is it harder to be kind to someone you know well or to a stranger? Why?", "What's the difference between being kind and just being 'nice'?", "Think of a time when a simple kind word made a big difference in your day.", "Brainstorm three small, kind acts you could do at school this week that would cost nothing."] }, 
+                { trait: "Honesty", isCompleted: false, prompts: ["Imagine you found a wallet with $20 in the hallway. What is the honest thing to do and why might it be difficult?", "Is a 'white lie' ever okay? Explain your thinking with an example.", "Describe how it feels when you realize someone has not been honest with you.", "Why is being honest with yourself just as important as being honest with others?", "If you accidentally broke something that belonged to a friend, what would be the honest way to handle it?"] }, 
+                { trait: "Perseverance", isCompleted: false, prompts: ["Think about something that was very difficult for you to learn, like riding a bike or a math concept. How did perseverance help you succeed?", "What can you say to yourself when you feel like giving up on a challenging task?", "Who is someone (real or fictional) who you think shows great perseverance? What did they overcome?", "Is it possible to persevere on something but still not succeed? Is that still valuable? Why?", "How can your friends or family help you persevere when you are struggling with something?"] }, 
+                { trait: "Courage", isCompleted: false, prompts: ["What is the difference between physical courage (like a firefighter) and moral courage (like standing up for what's right)?", "Describe a small act of courage you've witnessed, like someone admitting they made a mistake.", "Being courageous doesn't mean you aren't scared. Explain what this means to you.", "Think of a time you were afraid to do something but did it anyway. What was it and what did you learn?", "When is it courageous to ask for help?"] }, 
+                { trait: "Self-Control", isCompleted: false, prompts: ["You're very angry with a friend. What are some strategies you can use to show self-control instead of yelling?", "Your teacher is explaining something important, but you really want to talk to your friend. What does self-control look like in this moment?", "Why is self-control important when using technology, like video games or social media?", "Think about a time you used self-control to make a better choice. What was the situation?", "Is self-control something you are born with, or is it a skill you can practice and improve? Explain."] }, 
+                { trait: "Gratitude", isCompleted: false, prompts: ["What are three things that happened yesterday that you are grateful for? They can be very small things.", "Describe something you have that money can't buy. Why are you grateful for it?", "How can showing gratitude to someone make both you and the other person feel better?", "Think about a person in your life who helps you a lot (like a parent, teacher, or coach). Write a short note of gratitude to them.", "What is the difference between saying 'thank you' and truly feeling grateful?"] }, 
+                { trait: "Integrity", isCompleted: false, prompts: ["What does it mean to have integrity, or 'do the right thing even when no one is watching'?", "Imagine you see a friend cheating on a test. What would a person with integrity do?", "How does making honest choices, even when it's hard, build your personal integrity?", "Can a person have integrity if they are not honest? Why or why not?", "Describe a situation where your integrity might be tested."] }, 
+                { trait: "Cooperation", isCompleted: false, prompts: ["Think about a time you worked in a group that cooperated well. What made it successful?", "What are some of the challenges of working in a group, and how can cooperation help overcome them?", "How is cooperation different from just doing what someone else tells you to do?", "Describe a time when you had to compromise to help a group move forward.", "Why are cooperation and teamwork important skills for sports, school, and future jobs?"] }, 
+                { trait: "Resilience", isCompleted: false, prompts: ["Resilience means bouncing back from a tough time. Describe a time you had to be resilient.", "What is something you can learn from making a mistake or failing at something?", "Think of a character in a story who was very resilient. What challenges did they face and how did they bounce back?", "How can talking to friends or family help you be more resilient when you're feeling down?", "What's the difference between being resilient and just pretending that nothing bothers you?"] }, 
+                { trait: "Optimism", isCompleted: false, prompts: ["What does it mean to be optimistic, or to 'look on the bright side'?", "Imagine you tried out for the school play but didn't get the part you wanted. What would be an optimistic way to view this situation?", "Can being too optimistic ever be a problem? Explain your thoughts.", "How can an optimistic attitude help you when you are facing a challenge?", "Who is the most optimistic person you know? What do you admire about them?"] }, 
+                { trait: "Curiosity", isCompleted: false, prompts: ["What is something you are genuinely curious about? What steps could you take to learn more about it?", "Why do you think asking 'why?' is so important for learning and discovery?", "How can being curious help you understand people who are different from you?", "Describe a time your curiosity led you to discover something new and interesting.", "Is it possible to be curious about a subject you don't like, such as a school subject? How?"] }, 
+                { trait: "Fairness", isCompleted: false, prompts: ["Does 'fairness' always mean that everyone gets the exact same thing? Why or why not? Give an example.", "Imagine a teacher has one prize to give away. What would be the fairest way to decide who gets it?", "Describe a time you felt a situation was unfair. What made it feel that way?", "How can you make sure you are being fair when playing a game with friends?", "Why is fairness an important quality for a leader or a judge?"] }, 
+                { trait: "Forgiveness", isCompleted: false, prompts: ["What is the difference between forgiving someone and forgetting what they did?", "Why can it sometimes be so difficult to forgive someone who has hurt your feelings?", "Does forgiving someone mean you have to be their best friend again? Explain.", "Think about a time you had to forgive someone. How did it make you feel afterwards?", "Is it also important to forgive yourself when you make a mistake? Why?"] }, 
+                { trait: "Humility", isCompleted: false, prompts: ["What does it mean to be humble? How is it different from having low self-esteem?", "Imagine you won a big award. How can you show humility while still being proud of your accomplishment?", "Why is it important to be able to admit when you don't know something?", "Think of a leader or hero who also seems humble. What do they do that shows humility?", "How can being humble help you learn from others?"] }, 
+                { trait: "Patience", isCompleted: false, prompts: ["Describe a situation that requires a lot of patience (like waiting in a long line or teaching someone a new skill).", "What are some things you can do to help yourself stay patient when you are feeling frustrated or antsy?", "Why is patience important when you are working on a long-term project?", "Think of a time you were impatient. What was the result?", "How can you show patience with a friend or family member who is having a bad day?"] }, 
+                { trait: "Generosity", isCompleted: false, prompts: ["Can you be generous with things other than money? What are some examples?", "Describe how it feels to give a thoughtful gift to someone.", "Why does being generous often make the giver feel as good as the receiver?", "Think of a person or character who is very generous. What do they do?", "How can you be generous with your time or your talents to help your school or community?"] }, 
+                { trait: "Leadership", isCompleted: false, prompts: ["What are the three most important qualities of a good leader?", "Does a leader always have to be the loudest person in the room? Why or why not?", "Describe a time you took on a leadership role, even in a small way.", "How does a good leader help everyone in the group feel important and included?", "What is the difference between being a leader and being 'bossy'?"] }, 
+                { trait: "Citizenship", isCompleted: false, prompts: ["What does it mean to be a good citizen in your classroom?", "How do following rules, like traffic laws or school rules, contribute to good citizenship?", "What is one problem in your community (like litter in the park) and what is one small thing a good citizen could do to help?", "Why is voting (when you are old enough) an important part of citizenship?", "Describe three ways a person can be a good 'digital citizen' when online."] }, 
+                { trait: "Compassion", isCompleted: false, prompts: ["How is compassion different from empathy (feeling WITH someone vs feeling FOR someone)?", "If you see another student struggling with their schoolwork, what is a compassionate way to react?", "Think of a time someone showed you compassion when you were having a difficult time.", "Why is it important to have compassion for animals and the environment?", "How does showing compassion help build a stronger community?"] }, 
+                { trait: "Dependability", isCompleted: false, prompts: ["What does it mean to be a dependable friend?", "If you promise a friend you will help them study for a test, what does being dependable look like?", "Why do people value dependability in their friends and family members?", "Describe a time someone was very dependable and it helped you a lot.", "How can you show your teacher that you are a dependable student?"] }, 
+                { trait: "Grit", isCompleted: false, prompts: ["Grit is about passion and perseverance for long-term goals. What is a long-term goal you have that will require grit?", "How is grit different from just trying hard for one day?", "Think of an athlete or scientist who showed incredible grit. What did they work towards for a long time?", "What can you do on days when you don't feel motivated to work toward your goal?", "How does learning from your mistakes help you build grit?"] }, 
+                { trait: "Initiative", isCompleted: false, prompts: ["What does it mean to 'take initiative'?", "Describe a time you saw a problem (like a messy classroom) and took initiative to help without being asked.", "Why is taking initiative a valuable skill at school and in life?", "What is something in your school that could be improved? What initiative could a student take to start that change?", "What is the difference between taking initiative and doing something without permission?"] }, 
+                { trait: "Mindfulness", isCompleted: false, prompts: ["Mindfulness is about paying attention to the present moment. Take 60 seconds to just listen. What were all the different sounds you heard?", "How can practicing mindfulness help you when you are feeling stressed or overwhelmed?", "Describe what it feels like to eat a piece of your favorite fruit mindfully—thinking about the taste, smell, and texture.", "When your mind is racing with worries, how can focusing on your breath help?", "What is the opposite of being mindful? Describe a time you were doing something without really paying attention."] }, 
+                { trait: "Problem-Solving", isCompleted: false, prompts: ["Describe the steps you would take to solve a problem, like realizing you left your homework at home.", "What does it mean to 'brainstorm' solutions to a problem? Try it with a simple problem like 'it's raining and we can't play outside'.", "Why is it important to clearly identify the problem before you try to solve it?", "Think about a complex problem from a story or history. What were the different solutions the characters tried?", "When is it a good idea to ask others for help when solving a problem?"] }, 
+                { trait: "Growth Mindset", isCompleted: false, prompts: ["What is the difference between saying 'I'm bad at math' (fixed mindset) and 'I find math challenging, so I need to practice more' (growth mindset)?", "How can getting constructive feedback or criticism from a teacher help you grow?", "Describe a time you learned from a mistake and it made you better at something.", "Why is it more helpful to praise someone's effort and strategy rather than just saying 'You're so smart'?", "What is a 'challenge' you can give yourself this week to help your brain grow?"] }, 
+                { trait: "Self-Awareness", isCompleted: false, prompts: ["What is one of your biggest strengths? How does it help you?", "What is something that you find challenging or difficult? What is a first step to improving it?", "How do you know when you are starting to feel angry or frustrated? What are your body's signals?", "What kind of activities make you feel happy and energized?", "Why is it important to understand your own feelings before you react to a situation?"] }, 
+                { trait: "Self-Discipline", isCompleted: false, prompts: ["What does self-discipline mean to you? Give an example.", "Imagine you have a big project due in two weeks. How can you use self-discipline to work on it instead of waiting until the last minute?", "How does self-discipline help athletes or musicians become great at what they do?", "Think of a time you used self-discipline to make a healthy choice (like eating a vegetable instead of a third cookie).", "Is it easier to have self-discipline with things you enjoy or things you don't enjoy? Why?"] }, 
+                { trait: "Tolerance", isCompleted: false, prompts: ["What does it mean to be tolerant of people who have different beliefs, cultures, or traditions than you?", "How can you learn more about people who are different from you?", "Why is tolerance important for creating a peaceful and respectful school community?", "Think of a time you encountered a food, music, or tradition that was new to you. What was your reaction?", "How is being tolerant different from agreeing with everyone?"] }, 
+                { trait: "Trustworthiness", isCompleted: false, prompts: ["How is trust earned? How can it be broken?", "If a friend tells you a secret, what does it mean to be trustworthy?", "Why is it important for friends to be able to trust each other?", "Describe what being a trustworthy person looks like in a classroom setting.", "If you break someone's trust, what steps can you take to try and earn it back?"] }, 
+                { trait: "Wisdom", isCompleted: false, prompts: ["What is the difference between being smart (having knowledge) and being wise (using knowledge well)?", "Think of a wise character from a book or movie. What makes them wise?", "Why does wisdom often come from making mistakes?", "What is a piece of wise advice you have received from an older person?", "How can you use your experiences, both good and bad, to make wiser choices in the future?"] }, 
+                { trait: "Sportsmanship", isCompleted: false, prompts: ["What does it mean to show good sportsmanship when you win a game?", "What does it mean to show good sportsmanship when you lose a game?", "Why is it important to respect the referees or officials, even if you disagree with a call?", "How can you be a supportive teammate to someone who is having a tough game?", "Is good sportsmanship only for sports? Where else in life can you apply it?"] }, 
+                { trait: "Zest", isCompleted: false, prompts: ["Zest means approaching life with excitement and energy. What is an activity that you do with zest?", "How can you bring a little more zest to a task you find boring, like cleaning your room?", "Who is someone you know who seems to have a lot of zest for life? What do they do?", "How does a positive and energetic attitude affect the people around you?", "What is one thing you are looking forward to this week? Why does it fill you with excitement?"] },
+                { trait: "Creativity", isCompleted: false, prompts: ["Imagine a new holiday. What would you celebrate and what traditions would it have?", "Write a short story that starts with 'The mysterious box suddenly started to glow...'", "Design a machine that solves a common problem. How does it work?", "If you could add a new rule to your favorite game, what would it be and why?", "Rewrite the ending to a familiar fairy tale. What happens differently?"] }
+            ],
+            '6-8': [
+                { trait: "Empathy", isCompleted: false, prompts: ["How is empathy different from sympathy? Give an example of each.", "Think about a global issue in the news. How might it feel to be a person directly affected by it?", "Describe a time you disagreed with a friend but tried to understand their point of view. What did you learn?", "Why can it be difficult to show empathy for someone you don't know well or who is very different from you?", "How can social media sometimes make it harder to feel empathy for others?"] },
+                { trait: "Responsibility", isCompleted: false, prompts: ["What is the difference between a 'group responsibility' and an 'individual responsibility' on a team project?", "Describe a time you took responsibility for a mistake, even though it was difficult. What was the outcome?", "How does managing your time and homework demonstrate responsibility to yourself and your teachers?", "What does it mean to be a responsible digital citizen when you post, comment, or share online?", "Beyond schoolwork, what is one responsibility you have to your family or community? Why is it important?"] },
+                { trait: "Respect", isCompleted: false, prompts: ["How can you respectfully disagree with a classmate's opinion during a discussion, withoutmaking them feel bad?", "What does showing respect to a substitute teacher look like, and why is it important?", "Describe the difference between respecting someone because of their authority (like a principal) and respecting someone for their character.", "In what ways can you show respect for the different cultures and backgrounds of students at your school?", "How does gossip or spreading rumors show a lack of respect for others?"] },
+                { trait: "Kindness", isCompleted: false, prompts: ["What's the difference between being kind because you expect something in return, and being kind for its own sake?", "Describe a situation where being the only person to show kindness could make a huge difference.", "How can you be kind to someone you don't know very well, like someone new to the school?", "Is it possible to be both honest and kind at the same time, even when giving criticism? How?", "Think of a time a small act of kindness—from you or to you—changed the mood of a day."] },
+                { trait: "Honesty", isCompleted: false, prompts: ["Your friend is wearing an outfit you don't like and asks for your opinion. What is the most honest and kind way to respond?", "What does 'academic honesty' mean, and why is it a big deal in middle school and beyond?", "Describe a time it was tempting to be dishonest to avoid getting in trouble. What did you do and why?", "How does being honest with yourself about your own strengths and weaknesses help you grow?", "Why is trust in a friendship often built on a foundation of honesty?"] },
+                { trait: "Perseverance", isCompleted: false, prompts: ["Describe a long-term goal you're working on (like learning an instrument, a new sport, or a language). How do you keep going when you don't see immediate results?", "Think of a time you failed at something. How did you (or how could you) show perseverance afterward?", "What's the difference between persevering through a tough challenge and stubbornly refusing to ask for help?", "Who is a historical figure or a person in your life that you admire for their perseverance? What did they overcome?", "What can you say to yourself to stay motivated when a school subject gets really challenging?"] },
+                { trait: "Courage", isCompleted: false, prompts: ["What is 'moral courage'? Describe a situation where a person might need to show moral courage at school.", "When have you seen someone stand up to peer pressure? What made it a courageous act?", "It takes courage to try something new and risk failing in front of others. Describe a time you did this.", "What's the difference between being courageous and being reckless?", "How can being an 'ally' to someone who is being picked on be an act of courage?"] },
+                { trait: "Self-Control", isCompleted: false, prompts: ["You receive a text message that makes you angry. What's the difference in outcome between reacting instantly versus waiting 10 minutes to reply?", "How does self-control help you achieve a goal, like saving money for something you want or studying for a big test?", "Describe a strategy you can use to manage your focus and avoid distractions when doing homework.", "What does self-control look like during a competitive game or sport, both when winning and when losing?", "Why is self-control a key part of being a trustworthy and dependable friend?"] },
+                { trait: "Gratitude", isCompleted: false, prompts: ["Instead of a thing, describe an experience you are grateful for. Why does it stick with you?", "Who is a person in your life (not in your family) who has helped you? What is one way you could show your gratitude to them?", "How can practicing gratitude change your perspective on a bad day?", "What is one skill or talent you have that you are grateful for? How do you use it?", "Describe something about nature or the world around you that you are grateful for."] },
+                { trait: "Integrity", isCompleted: false, prompts: ["What does it mean to 'have character' or 'be a person of integrity'?", "Imagine you're with a group of friends who start making fun of someone. What would a person with integrity do?", "How does your online behavior (what you post, like, and say) reflect your integrity?", "Describe a situation where the 'easy choice' and the 'right choice' were two different things.", "Why is it important for a leader to have strong integrity?"] },
+                { trait: "Cooperation", isCompleted: false, prompts: ["Describe a time a group project was successful because everyone cooperated. What specific things did people do to make it work?", "What are some challenges that can happen when trying to cooperate in a group? How can they be solved?", "How do you ensure everyone's voice is heard in a group, not just the loudest ones?", "Think of a sport or a band. Why is cooperation just as important as individual skill?", "What does it mean to 'pull your weight' in a group? Why is this essential for cooperation?"] },
+                { trait: "Resilience", isCompleted: false, prompts: ["Resilience is like a muscle that gets stronger. What is one 'workout' you could do to build your resilience?", "Think of a time you received a disappointing grade or feedback. How can you be resilient in that situation?", "How does your mindset (the way you think about a problem) affect your ability to bounce back from it?", "What is the difference between being resilient and just ignoring or bottling up your feelings?", "Who is someone you can talk to that helps you feel more resilient when you're facing a challenge?"] },
+                { trait: "Optimism", isCompleted: false, prompts: ["What is the difference between realistic optimism and wishful thinking?", "You have a big, challenging project ahead of you. How can an optimistic outlook help you get started?", "How can your optimistic or pessimistic attitude affect the people around you?", "Think of a setback you've had. What is one positive thing or lesson you can take from it?", "Is it easier to be optimistic about some things than others? Why?"] },
+                { trait: "Curiosity", isCompleted: false, prompts: ["What is a topic you know almost nothing about but would be curious to explore?", "How does asking 'what if...?' lead to new ideas and discoveries?", "Why is it important to be curious about other people's perspectives, even if you don't agree with them?", "Describe a time when being curious helped you solve a problem or learn a new skill.", "How can you stay curious and keep learning outside of what you're assigned in school?"] },
+                { trait: "Fairness", isCompleted: false, prompts: ["Does 'fair' always mean 'equal'? Explain why or why not with an example.", "Think about the rules of a game you like. What makes those rules fair?", "Describe a situation in school or in the world that you think is unfair. What would need to change to make it fair?", "How do you make a fair decision in a group when people have different opinions?", "Why is it important for teachers and people in authority to act with fairness?"] },
+                { trait: "Forgiveness", isCompleted: false, prompts: ["A friend broke a promise and hurt your feelings. What are the pros and cons of forgiving them?", "Does forgiving someone mean you have to let them back into your life in the same way? Explain.", "Why is it sometimes just as important to forgive yourself for making a mistake?", "How can holding onto a grudge affect you more than the person you're angry with?", "What is the difference between an apology and an excuse?"] },
+                { trait: "Humility", isCompleted: false, prompts: ["What's the difference between being humble and putting yourself down?", "You're the best player on your team. How can you show humility while still being a confident leader?", "Describe a time you learned something important from someone you didn't expect to.", "Why is being able to admit 'I don't know' or 'I was wrong' a sign of strength, not weakness?", "How can humility help you be more open to feedback and constructive criticism?"] },
+                { trait: "Patience", isCompleted: false, prompts: ["Describe a time you had to be patient while learning a new, difficult skill. What did that feel like?", "Why is patience important when you're working with a group of people who learn at different speeds?", "How can social media and the internet sometimes make us less patient? How can we fight that?", "What are some strategies you can use to stay patient when you are feeling frustrated or annoyed?", "Think of a long-term goal you have. How will patience be necessary to achieve it?"] },
+                { trait: "Generosity", isCompleted: false, prompts: ["What are some ways to be generous that don't involve money or material things?", "Describe what it means to be generous with your time or your attention.", "Think of a time someone was generous to you. How did it impact you?", "How can you be generous with your words, for example, by giving a sincere compliment or encouragement?", "What is the difference between being generous and just letting people take advantage of you?"] },
+                { trait: "Leadership", isCompleted: false, prompts: ["Do you have to have a title (like 'captain' or 'president') to be a leader? Why or why not?", "What does it mean for a leader to lead by example?", "Describe a time you saw someone take on a leadership role in a difficult situation.", "How does a good leader make sure everyone on the team feels valued and contributes to the success?", "What is one quality you admire in a leader you know, and how can you develop that quality in yourself?"] },
+                { trait: "Citizenship", isCompleted: false, prompts: ["What does it mean to be a good citizen of your school community?", "Describe one small thing you could do this week to improve the school environment for everyone.", "What are some of your responsibilities as a 'digital citizen' on social media or in online games?", "Why is being informed about what's happening in your community or the world a part of good citizenship?", "How does respecting school property and public spaces demonstrate good citizenship?"] },
+                { trait: "Compassion", isCompleted: false, prompts: ["How is compassion different from feeling sorry for someone (pity)?", "Think of a group of people (or a person) who are often misunderstood or judged. What would it look like to show them compassion?", "Describe a time when you acted with compassion. What did you do?", "Can you have compassion for someone even if you don't agree with their choices? How?", "Why is it important to also have compassion for yourself when you make a mistake?"] },
+                { trait: "Dependability", isCompleted: false, prompts: ["What are three actions that would make someone see you as a dependable person?", "Think of a time you counted on someone and they came through for you. How did that strengthen your relationship?", "In a group project, what does a dependable teammate do?", "Why is being on time and meeting deadlines a key part of being dependable?", "How does dependability build trust between friends, family, and teachers?"] },
+                { trait: "Grit", isCompleted: false, prompts: ["Grit is a combination of passion and perseverance. What is something you are passionate enough about to show grit for?", "Describe a time you wanted to quit something but decided to stick with it. What was the result?", "How is having grit different from just being talented at something?", "Think of a famous inventor or explorer. How did they demonstrate grit?", "What can you do to build your 'grit' muscle, even when you're not feeling motivated?"] },
+                { trait: "Initiative", isCompleted: false, prompts: ["What does it mean to 'see a need, fill a need'? Give an example of how this could apply at school.", "Describe a time you started something (a project, a chore, studying) without having to be told to do it. How did it feel?", "What is the difference between showing initiative and just doing what you're told?", "If you could start a new club or activity at school, what would it be? What initiative would it take to get it started?", "Why do you think teachers and employers value people who show initiative?"] },
+                { trait: "Mindfulness", isCompleted: false, prompts: ["Describe what it feels like when your mind is 'somewhere else' while you're doing something. What is the opposite of that?", "How can taking three slow, deep breaths help you reset when you're feeling stressed or overwhelmed?", "Mindfulness can be practiced anywhere. Describe how you could eat a snack mindfully, paying attention to all five senses.", "What does it mean to 'notice your thoughts without judging them'?", "How could a few minutes of mindfulness or quiet time help you focus before a test or a game?"] },
+                { trait: "Problem-Solving", isCompleted: false, prompts: ["Describe a problem you or a friend have faced recently. What are three possible solutions you could brainstorm?", "What does it mean to look at a problem from different perspectives? How can this help you solve it?", "Think of a time you tried to solve a problem and your first attempt didn't work. What did you do next?", "When facing a big problem, why is it helpful to break it down into smaller, more manageable pieces?", "When is it smart to ask for help when solving a problem, and who could you ask?"] },
+                { trait: "Growth Mindset", isCompleted: false, prompts: ["What is the difference between saying 'I can't do this' and 'I can't do this... yet'?", "How is your brain like a muscle? What kind of 'exercise' makes it stronger?", "Describe a time you received constructive criticism that helped you improve. How did you use it?", "Why is it more powerful to praise someone's effort and strategy rather than just their grade?", "Instead of avoiding a challenge, what is one challenge you could embrace this week to help yourself grow?"] },
+                { trait: "Self-Awareness", isCompleted: false, prompts: ["What is one of your greatest academic or personal strengths? How can you use it more?", "What is something that often triggers a feeling of frustration or anger in you? Why do you think that is?", "How do you learn best? (e.g., by listening, by doing, by reading, in a group, alone).", "What are two things you need to do each day to feel your best and be ready to learn?", "How does being aware of your own emotions help you understand and interact with others better?"] },
+                { trait: "Self-Discipline", isCompleted: false, prompts: ["What is the difference between self-discipline and having someone else tell you what to do?", "Think of a long-term goal you have. What is one act of self-discipline you could do today to move closer to it?", "How can you use self-discipline to manage your screen time so you have more time for other things?", "Describe a time you used self-discipline to make a choice that was good for you in the long run, even if it was hard at the moment.", "Why is self-discipline essential for anyone who wants to become an expert at a skill (like music, sports, or art)?"] },
+                { trait: "Tolerance", isCompleted: false, prompts: ["How is tolerance different from acceptance or celebration of differences?", "Describe a time you learned something new about a culture or background different from your own. What did you learn?", "Why is it important to have tolerance for people who have different tastes in music, clothes, or hobbies?", "How can you show tolerance and respect online, especially when you encounter opinions you disagree with?", "How does a lack of tolerance contribute to problems like bullying and cliques?"] },
+                { trait: "Trustworthiness", isCompleted: false, prompts: ["What are three things that can break trust in a friendship? How can they be avoided?", "If someone tells you a secret, what is your responsibility?", "How do you build a reputation as a trustworthy and reliable person among your peers and teachers?", "What is the difference between being trustworthy and just being popular?", "Think of a time you had to put your trust in someone else. What did they do to earn it?"] },
+                { trait: "Wisdom", isCompleted: false, prompts: ["What is the difference between being knowledgeable (knowing a lot of facts) and being wise?", "Think of a mistake you made in the past. What is the wise lesson you can take from it?", "Who is the wisest person you know? What makes them seem wise to you?", "When facing a difficult decision, what questions could a wise person ask themselves?", "How can listening to the experiences of older people help you gain wisdom?"] },
+                { trait: "Sportsmanship", isCompleted: false, prompts: ["How can you show good sportsmanship in an academic setting, like during a class competition or debate?", "Your team loses a close game due to a bad call. What does good sportsmanship look like from the players and the fans?", "What does it mean to 'win with class' and 'lose with dignity'?", "How can you be a good teammate to someone who is struggling or having a bad day?", "Why is sportsmanship important in online gaming communities?"] },
+                { trait: "Zest", isCompleted: false, prompts: ["What is an activity or topic that makes you feel energized and excited to learn more about?", "How can you bring a sense of zest and enthusiasm to a school project or assignment you're not initially excited about?", "Describe a person you know (or a public figure) who seems to approach life with a lot of zest. What do they do?", "How does your own energy level and attitude affect the mood of a group you're in?", "What is one thing you can do this week to add a little more zest and fun to your daily routine?"] },
+                { trait: "Creativity", isCompleted: false, prompts: ["How can creativity be used to solve a real-world problem, not just in art or music?", "Think of a rule at school or at home. What is a creative and better way to achieve the same goal?", "Describe an idea for a YouTube channel, podcast, or comic that you would be excited to create.", "If you could combine two different things to invent something new (like a sport, a food, or a gadget), what would you create?", "Take a common object and brainstorm ten completely new and creative uses for it."] }
+            ],
+            '9-12': [
+                { trait: "Empathy", isCompleted: false, prompts: ["Describe a time you completely misunderstood how someone else was feeling. What happened and what did you learn from it?", "Think about a character from a book, show, or movie that no one else seemed to understand. What was their perspective?", "What's the difference between saying 'I'm sorry you feel that way' and 'I understand why you feel that way'? Which is more empathetic?", "Why is it important to try and understand someone's point of view, even if you strongly disagree with them?", "How can scrolling through social media sometimes make it harder to feel empathy for others?"] },
+                { trait: "Responsibility", isCompleted: false, prompts: ["What is one new responsibility you've gained in high school that you didn't have in middle school? How has it changed things?", "Describe a time you had to take responsibility for a mistake. What was the hardest part?", "How does being responsible with your schoolwork now prepare you for a job or college in the future?", "What does it mean to be a responsible friend?", "Beyond your schoolwork, what is one responsibility you have to your family? Why is it important?"] },
+                { trait: "Respect", isCompleted: false, prompts: ["How can you show respect for a teacher or coach, even if you don't agree with their decision?", "What does it mean to respect someone's personal space and boundaries?", "Describe a time you saw someone being disrespected. What could have been done differently?", "Why is it important to respect the rules of the school, even the ones you think are silly?", "What's the difference between self-respect and being arrogant?"] },
+                { trait: "Kindness", isCompleted: false, prompts: ["What is the difference between being kind and just being 'nice' to avoid conflict?", "Describe a time when a small, unexpected act of kindness made a big impact on your day.", "Is it harder to be kind to strangers, friends, or yourself? Why?", "How can you be kind online, especially when you disagree with someone?", "Think of a time someone was kind to you when you didn't expect it. How did it make you feel?"] },
+                { trait: "Honesty", isCompleted: false, prompts: ["Describe a situation where being honest was difficult, but you're glad you did it. What was the outcome?", "What does 'being honest with yourself' mean? Give an example.", "How can a small lie sometimes cause more damage than telling the truth?", "Why is honesty a crucial part of any strong friendship or relationship?", "What is the difference between being honest and being blunt or rude?"] },
+                { trait: "Perseverance", isCompleted: false, prompts: ["Describe a time you wanted to quit something but didn't. What motivated you to keep going?", "What's the difference between persevering through a challenge and stubbornly refusing to change your plan when it's not working?", "Think of a long-term goal you have. What are three small steps you can take this month to work towards it?", "How does celebrating small successes help with persevering toward a bigger goal?", "Who is someone you admire for their perseverance? What have they accomplished?"] },
+                { trait: "Courage", isCompleted: false, prompts: ["What is the difference between everyday courage (like trying something new) and heroic courage?", "Describe a time you stood up for what you believed in, even if it was unpopular.", "It takes courage to be yourself. What is one thing you do that shows your authentic self?", "When is it more courageous to walk away from a situation than to stay and fight?", "How can you support a friend who needs to find the courage to face a difficult situation?"] },
+                { trait: "Self-Control", isCompleted: false, prompts: ["Describe a time you used self-control to stop yourself from saying something you would have regretted.", "How does self-control with your phone (e.g., putting it away while studying) impact your success in school?", "What is one 'impulse buy' you've wanted recently? What strategies can you use to practice self-control with money?", "How does a lack of self-control in one area (like staying up too late) affect other parts of your day?", "What is one small way you can practice self-discipline today?"] },
+                { trait: "Gratitude", isCompleted: false, prompts: ["What is one simple thing that happened today that you can be grateful for?", "Describe a skill or talent you have that you are grateful for. How did you develop it?", "Who is a person in your life that you're grateful for? What is one specific thing they do that you appreciate?", "How can feeling grateful change your mood when you're having a bad day?", "What is something you used to take for granted but are now grateful for?"] },
+                { trait: "Integrity", isCompleted: false, prompts: ["What does it mean to be a person of integrity?", "Describe a situation where you had to choose between the easy thing and the right thing.", "How do your actions when no one is watching define your integrity?", "Why is it important for your online actions to match your real-world integrity?", "Think of a character from a book or movie with strong integrity. What choices did they make?"] },
+                { trait: "Cooperation", isCompleted: false, prompts: ["Describe a time a group project went well. What made the cooperation successful?", "What is the most challenging part of cooperating with people who have different ideas than you?", "How can you be a good cooperative partner, even if you don't like the project you're working on?", "What's the difference between cooperating and just letting other people do all the work?", "Why will the skill of cooperation be important in your future job or in college?"] },
+                { trait: "Resilience", isCompleted: false, prompts: ["Describe a time you 'bounced back' from a disappointment or a failure. What did you learn from it?", "What is one thing you can do to build your resilience, like a muscle?", "How can your friends and family support you when you're trying to be resilient after a setback?", "What is the difference between being resilient and just pretending that nothing bothers you?", "Who is a public figure or historical person who showed great resilience? What did they overcome?"] },
+                { trait: "Optimism", isCompleted: false, prompts: ["What does it mean to be a 'realistic optimist'?", "Think of a current challenge you're facing. What is one potential positive outcome or lesson you could gain from it?", "How does your own optimism (or pessimism) affect the mood of your friends or family?", "When you have a setback, what is something you can tell yourself to stay optimistic?", "Is it possible to be too optimistic? What might that look like?"] },
+                { trait: "Curiosity", isCompleted: false, prompts: ["What is one topic you're curious about that has nothing to do with school? How could you learn more about it this week?", "How does being curious make life more interesting?", "Why is it important to be curious about people who are different from you?", "Describe a time your curiosity led you to discover something cool or unexpected.", "What is the difference between being curious and being nosy?"] },
+                { trait: "Fairness", isCompleted: false, prompts: ["Describe a time you witnessed a situation that you felt was unfair. What made it seem that way?", "Does 'fair' always mean everyone gets the same thing? Why or why not?", "How can you and your friends ensure you are being fair when you play games or make group decisions?", "Why is fairness an important quality in a friend or a leader?", "What is one rule at school or in society that you think makes things more fair?"] },
+                { trait: "Forgiveness", isCompleted: false, prompts: ["Why is it sometimes harder to forgive a small hurt from a close friend than a big one from a stranger?", "Does forgiving someone mean you have to forget what happened? Explain your thinking.", "Think about a time you had to forgive someone. Did it change your relationship?", "Why is it important to also learn how to forgive yourself when you make a mistake?", "What is the difference between someone making an excuse and someone giving a sincere apology?"] },
+                { trait: "Humility", isCompleted: false, prompts: ["What is the difference between being humble and having low self-esteem?", "How can you be proud of an accomplishment without bragging or showing off?", "Describe a time you learned something important from someone younger than you or with less experience.", "Why is being able to say 'I don't know' or 'I need help' a sign of strength?", "How can being humble make you a better teammate or a better friend?"] },
+                { trait: "Patience", isCompleted: false, prompts: ["Describe a time you were impatient and it made the situation worse.", "What is a long-term goal you have that will require a lot of patience to achieve?", "In a world of fast technology and instant answers, why is patience still an important skill?", "What is one strategy you can use to stay patient when you're feeling frustrated?", "How can you show patience when a friend or family member is struggling to learn something new?"] },
+                { trait: "Generosity", isCompleted: false, prompts: ["What are three ways to be generous that don't cost any money?", "Describe what it means to be generous with your time or your attention.", "Think of a time someone was generous to you. How did it make you feel?", "How can giving a sincere compliment be an act of generosity?", "What's the difference between being generous and being a people-pleaser?"] },
+                { trait: "Leadership", isCompleted: false, prompts: ["What are the three most important qualities you think a good leader should have?", "You don't have to be in charge to be a leader. What does it mean to 'lead by example'?", "Describe a time you saw someone step up as a leader in your school or community.", "How does a good leader listen to the ideas of others?", "What is one way you could practice being a leader this week, even in a small way?"] },
+                { trait: "Citizenship", isCompleted: false, prompts: ["What does it mean to be a good citizen of your school community?", "What is one thing you could do to make your school a better place for everyone?", "What does 'digital citizenship' mean? Give an example of being a good digital citizen.", "Why is it important to be informed about what is happening in your community and the world?", "How does respecting your school's property show good citizenship?"] },
+                { trait: "Compassion", isCompleted: false, prompts: ["What is the difference between feeling sorry for someone (pity) and feeling compassion for them?", "Describe a time you tried to understand what someone else was going through.", "How can you show compassion for a new student at your school?", "Is it possible to have compassion for someone even if you don't agree with their actions? Explain.", "Why is it important to also have compassion for yourself when you're having a tough time?"] },
+                { trait: "Dependability", isCompleted: false, prompts: ["What does it mean to be a dependable friend? What actions does that involve?", "Think of a time you really counted on someone and they came through for you. How did that make you feel?", "Why is dependability an important quality in a teammate for a group project?", "How does being on time and doing what you say you'll do build a reputation for being dependable?", "What's one promise you can make to yourself this week and keep?"] },
+                { trait: "Grit", isCompleted: false, prompts: ["Grit means sticking with your goals. What is a long-term goal you're working towards?", "Describe a time you faced a setback but decided to keep trying. What happened?", "How is having grit different from just being good at something naturally?", "Think of an athlete, scientist, or artist who has shown incredible grit. What challenges did they face?", "What is one thing you can do when you feel like giving up on a difficult assignment?"] },
+                { trait: "Initiative", isCompleted: false, prompts: ["What does it mean to 'take initiative'?", "Describe a time you did something helpful without being asked.", "Why is taking initiative a skill that is highly valued in the workplace?", "If you could start a new club or project at school, what would it be?", "What is the difference between taking initiative and just doing what you're told?"] },
+                { trait: "Mindfulness", isCompleted: false, prompts: ["Mindfulness is paying attention to the present moment. Take 60 seconds to just sit and listen. What did you notice?", "How can taking a few deep breaths help you when you're feeling stressed before a test or a presentation?", "Describe the difference between eating a meal while watching TV versus eating it mindfully.", "What does it mean to 'notice your thoughts without getting carried away by them'?", "How can putting your phone away and being mindful of your surroundings improve an experience like a walk or a conversation?"] },
+                { trait: "Problem-Solving", isCompleted: false, prompts: ["Describe a problem you've faced recently. What were some of the possible solutions you considered?", "Why is it important to clearly understand a problem before you try to solve it?", "Think of a time you had to 'think outside the box' to solve a problem.", "When you're facing a big challenge, why is it helpful to break it down into smaller steps?", "Who is a person you can go to for advice when you're trying to solve a difficult problem?"] },
+                { trait: "Growth Mindset", isCompleted: false, prompts: ["What is the difference between saying 'I'm not good at this' and 'I'm not good at this yet'?", "How does your brain get stronger when you work on challenging things, even if you make mistakes?", "Describe a time you learned from a mistake and it helped you improve.", "Why is it better to praise someone's effort and hard work than to just say 'You're smart'?", "What is one subject or skill you'd like to get better at? What's the first step?"] },
+                { trait: "Self-Awareness", isCompleted: false, prompts: ["What is one of your biggest strengths? How can you use it to help you a lot this week?", "What is a situation that typically makes you feel stressed or anxious? Knowing this, what can you do to prepare for it?", "What time of day do you do your best work? How can you use this knowledge to plan your study time?", "What is one of your core values (e.g., honesty, loyalty, creativity)? How does it guide your decisions?", "How does understanding your own feelings help you to not overreact in a difficult situation?"] },
+                { trait: "Self-Discipline", isCompleted: false, prompts: ["What is the difference between motivation (wanting to do something) and discipline (doing it even when you don't want to)?", "Think of a long-term goal you have. What is one thing you could do today that your future self would thank you for?", "How can you use self-discipline to balance your schoolwork and your social life?", "Describe a time you resisted a temptation (like playing a video game instead of studying) and were proud of yourself later.", "Why is self-discipline important for achieving things like getting in shape, learning an instrument, or saving money?"] },
+                { trait: "Tolerance", isCompleted: false, prompts: ["What does it mean to be tolerant of someone who has a very different opinion, background, or lifestyle than you?", "Describe a time you learned something new from a person who is very different from you.", "Why is tolerance important for a school to be a safe and welcoming place for everyone?", "How can you respectfully listen to someone's opinion, even if you completely disagree with it?", "What's the difference between tolerating something and approving of it?"] },
+                { trait: "Trustworthiness", isCompleted: false, prompts: ["What are three actions that build trust in a friendship?", "If a friend tells you a secret, what is your responsibility?", "How does doing what you say you're going to do make you a trustworthy person?", "Why is it so much harder to rebuild trust than it is to build it in the first place?", "Think of someone you trust completely. What have they done to earn that trust?"] },
+                { trait: "Wisdom", isCompleted: false, prompts: ["What is the difference between being 'book smart' and being 'street smart' or wise?", "Think of a mistake you've made. What is one piece of wisdom you gained from that experience?", "Who is an older person you consider to be wise? What have you learned from them?", "When you have to make a tough choice, what's a wise question to ask yourself?", "How can listening to different perspectives help you make a wiser decision?"] },
+                { trait: "Sportsmanship", isCompleted: false, prompts: ["How can you show good sportsmanship in the classroom, not just in sports?", "Your team just lost a big game. What does good sportsmanship look like in the final minutes and after the game?", "What does it mean to be a 'gracious winner'?", "How can you be a supportive teammate to someone who made a mistake?", "Why is good sportsmanship important in online activities like video games?"] },
+                { trait: "Zest", isCompleted: false, prompts: ["What is a class, hobby, or activity that you approach with zest (great energy and enthusiasm)?", "How can you bring a little more zest to a task you find boring, like a chore or a difficult assignment?", "Describe a person you know who seems to have a lot of zest for life. What do they do that shows it?", "How does your attitude and energy level affect the people you're around?", "What is one thing you are genuinely excited about this week?"] },
+                { trait: "Creativity", isCompleted: false, prompts: ["What does it mean to 'think outside the box'?", "Describe a problem at school or in your community. What is one creative idea to help solve it?", "How can you be creative in a subject like math or science?", "What is one thing you could create (a story, a song, a drawing, a video) just for fun?", "Think of a common, everyday object. What are five new and creative uses for it?"] }
+            ]
+        };
+        
+        let allPromptsData = {};
+        let currentGradeBand = '3-5';
+        let currentTraitName = null; // To keep track of the current trait in the weekly view
+        let appSettings = {}; // To hold master timer settings
+
+        // Timer variables
+        let timerInterval = null;
+        let totalSeconds = 0;
+        let isTimerRunning = false;
+
+        const gridView = document.getElementById('grid-view-container');
+        const weeklyView = document.getElementById('weekly-view-container');
+        const projectorView = document.getElementById('projector-view');
+        const resetModal = document.getElementById('reset-modal');
+        const settingsModal = document.getElementById('settings-modal');
+        const traitGrid = document.getElementById('trait-grid');
+        const weeklyTitle = document.getElementById('weekly-trait-title');
+        const completionToggleContainer = document.getElementById('completion-toggle-container');
+        const promptList = document.getElementById('prompt-list');
+        const projectorPromptText = document.getElementById('projector-prompt-text');
+        const downloadWeekBtn = document.getElementById('download-week-btn');
+        const themeSelector = document.getElementById('theme-selector');
+        const gradeSelector = document.getElementById('grade-selector');
+        const gradeSubtitle = document.getElementById('grade-subtitle');
+        const fullscreenIconOpen = document.getElementById('fullscreen-icon-open');
+        const fullscreenIconClose = document.getElementById('fullscreen-icon-close');
+        
+        // --- New Main Fullscreen element references ---
+        const mainFullscreenBtn = document.getElementById('main-fullscreen-btn');
+        const mainFullscreenIconOpen = document.getElementById('main-fullscreen-icon-open');
+        const mainFullscreenIconClose = document.getElementById('main-fullscreen-icon-close');
+        
+        // Timer elements
+        const timerDisplay = document.getElementById('timer-display');
+        const timerMinutesInput = document.getElementById('timer-minutes');
+        const timerSecondsInput = document.getElementById('timer-seconds');
+        const timerStartPauseBtn = document.getElementById('timer-start-pause');
+        const timerResetBtn = document.getElementById('timer-reset');
+        
+        // Settings elements
+        const settingsBtn = document.getElementById('settings-btn');
+        const defaultGradeSelector = document.getElementById('default-grade-selector');
+        const masterTimerMinutesInput = document.getElementById('master-timer-minutes');
+        const masterTimerSecondsInput = document.getElementById('master-timer-seconds');
+        const masterTimerAutostartInput = document.getElementById('master-timer-autostart');
+        const exportDataBtn = document.getElementById('export-data-btn');
+        const importDataBtn = document.getElementById('import-data-btn');
+        const importFileInput = document.getElementById('import-file-input');
+
+
+        const animationDuration = 500;
+        
+        function updateProgressTracker() {
+            const currentData = allPromptsData[currentGradeBand];
+            if (!currentData) return;
+
+            const completedCount = currentData.filter(trait => trait.isCompleted).length;
+            const totalTraits = currentData.length;
+            const percentage = totalTraits > 0 ? (completedCount / totalTraits) * 100 : 0;
+
+            const barFill = document.getElementById('progress-bar-fill');
+            const label = document.getElementById('progress-label');
+
+            if (barFill && label) {
+                barFill.style.width = `${percentage}%`;
+                label.textContent = `${Math.round(percentage)}% of traits completed`;
+            }
+        }
+
+        function changeTheme() {
+            const selectedTheme = themeSelector.value;
+            document.body.className = `theme-${selectedTheme}`;
+        }
+        
+        function handleGradeChange() {
+            const selectedBand = gradeSelector.value;
+            currentGradeBand = selectedBand;
+            const selectedOptionText = gradeSelector.options[gradeSelector.selectedIndex].text;
+            gradeSubtitle.textContent = `For ${selectedOptionText}`;
+            localStorage.setItem('mindfulMorningsLastBand', selectedBand);
+
+            if (weeklyView.classList.contains('active')) {
+                renderWeeklyView(currentTraitName);
+            } else {
+                renderGridView();
+            }
+            updateProgressTracker();
+        }
+
+        function loadData() {
+            const savedVersion = localStorage.getItem('mindfulMorningsVersion');
+            const savedData = localStorage.getItem('mindfulMorningsData');
+
+            if (savedVersion !== APP_VERSION || !savedData) {
+                allPromptsData = JSON.parse(JSON.stringify(allDefaultPrompts));
+                localStorage.setItem('mindfulMorningsVersion', APP_VERSION);
+                saveData();
+            } else {
+                allPromptsData = JSON.parse(savedData);
+            }
+            
+            const startupBand = appSettings.defaultGradeBand || localStorage.getItem('mindfulMorningsLastBand') || '3-5';
+            gradeSelector.value = startupBand;
+            handleGradeChange();
+        }
+
+        function saveData() {
+            localStorage.setItem('mindfulMorningsData', JSON.stringify(allPromptsData));
+        }
+
+        function renderGridView() {
+            const currentData = allPromptsData[currentGradeBand];
+            traitGrid.innerHTML = '';
+            currentData.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'trait-card';
+                if (item.isCompleted) {
+                    card.classList.add('completed');
+                }
+                card.innerHTML = `
+                    ${item.trait}
+                    <svg class="checkmark" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                `;
+                card.onclick = () => showWeeklyView(item.trait);
+                traitGrid.appendChild(card);
+            });
+            updateProgressTracker();
+        }
+
+        function renderWeeklyView(traitName) {
+            currentTraitName = traitName;
+            const currentData = allPromptsData[currentGradeBand];
+            const data = currentData.find(item => item.trait === traitName);
+            if (!data) {
+                showGridView();
+                return;
+            }
+
+            weeklyTitle.textContent = data.trait;
+            
+            completionToggleContainer.innerHTML = `
+                <label class="completion-toggle">
+                    <span>Completed?</span>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="completion-checkbox" ${data.isCompleted ? 'checked' : ''}>
+                        <span class="slider"></span>
+                    </div>
+                </label>
+            `;
+            document.getElementById('completion-checkbox').onchange = (e) => {
+                data.isCompleted = e.target.checked;
+                saveData();
+                const cardInGrid = Array.from(traitGrid.children).find(card => card.textContent.trim() === traitName);
+                if(cardInGrid) {
+                    cardInGrid.classList.toggle('completed', data.isCompleted);
+                }
+                updateProgressTracker();
+            };
+
+            promptList.innerHTML = '';
+            data.prompts.forEach((prompt, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'prompt-item';
+                itemDiv.dataset.trait = traitName;
+                itemDiv.dataset.index = index;
+
+                const textP = document.createElement('p');
+                textP.className = 'prompt-text';
+                textP.textContent = `Day ${index + 1}: ${prompt}`;
+                
+                const buttonsDiv = document.createElement('div');
+                buttonsDiv.className = 'prompt-buttons';
+
+                const displayBtn = document.createElement('button');
+                displayBtn.textContent = 'Display Warm-Up';
+                displayBtn.onclick = () => {
+                    const updatedData = allPromptsData[currentGradeBand].find(t => t.trait === traitName);
+                    showProjectorView(updatedData.prompts[index]);
+                };
+                
+                const pdfBtn = document.createElement('button');
+                pdfBtn.className = 'secondary';
+                pdfBtn.textContent = 'Create PDF';
+                pdfBtn.onclick = () => {
+                    const updatedData = allPromptsData[currentGradeBand].find(t => t.trait === traitName);
+                    generateSinglePdf(updatedData.prompts[index], traitName);
+                };
+
+                const editBtn = document.createElement('button');
+                editBtn.className = 'edit';
+                editBtn.textContent = 'Edit';
+                editBtn.onclick = (e) => toggleEditMode(e.target.closest('.prompt-item'));
+
+                buttonsDiv.appendChild(displayBtn);
+                buttonsDiv.appendChild(pdfBtn);
+                buttonsDiv.appendChild(editBtn);
+                itemDiv.appendChild(textP);
+                itemDiv.appendChild(buttonsDiv);
+                promptList.appendChild(itemDiv);
+            });
+            downloadWeekBtn.onclick = () => {
+                const updatedData = allPromptsData[currentGradeBand].find(t => t.trait === traitName);
+                generateWeeklyPdf(updatedData);
+            };
+        }
+
+        function showWeeklyView(traitName) {
+            gridView.classList.add('is-exiting');
+            setTimeout(() => {
+                gridView.classList.remove('active', 'is-exiting');
+                renderWeeklyView(traitName);
+                weeklyView.classList.add('active', 'is-entering');
+                setTimeout(() => weeklyView.classList.remove('is-entering'), animationDuration);
+            }, animationDuration);
+        }
+        
+        function toggleEditMode(itemDiv) {
+            const isEditing = itemDiv.classList.contains('editing');
+            const textP = itemDiv.querySelector('.prompt-text');
+            const buttonsDiv = itemDiv.querySelector('.prompt-buttons');
+            const editBtn = buttonsDiv.querySelector('.edit');
+
+            if (isEditing) {
+                const textArea = itemDiv.querySelector('.prompt-editor');
+                const newPrompt = textArea.value;
+                
+                const traitName = itemDiv.dataset.trait;
+                const promptIndex = parseInt(itemDiv.dataset.index, 10);
+                const traitData = allPromptsData[currentGradeBand].find(t => t.trait === traitName);
+                traitData.prompts[promptIndex] = newPrompt;
+                saveData();
+
+                textP.textContent = `Day ${promptIndex + 1}: ${newPrompt}`;
+                itemDiv.removeChild(textArea);
+                textP.style.display = 'block';
+                editBtn.textContent = 'Edit';
+                itemDiv.classList.remove('editing');
+
+            } else {
+                const currentPrompt = textP.textContent.replace(`Day ${parseInt(itemDiv.dataset.index, 10) + 1}: `, '');
+                const textArea = document.createElement('textarea');
+                textArea.className = 'prompt-editor';
+                textArea.value = currentPrompt;
+                
+                textP.style.display = 'none';
+                itemDiv.insertBefore(textArea, buttonsDiv);
+                editBtn.textContent = 'Save';
+                itemDiv.classList.add('editing');
+                textArea.focus();
+            }
+        }
+
+        function showGridView() {
+            weeklyView.classList.add('is-exiting');
+            setTimeout(() => {
+                weeklyView.classList.remove('active', 'is-exiting');
+                gridView.classList.add('active');
+                gridView.classList.add('is-entering');
+                gridView.style.animationName = 'slide-in-rev';
+                setTimeout(() => {
+                    gridView.classList.remove('is-entering');
+                    gridView.style.animationName = '';
+                }, animationDuration);
+            }, animationDuration);
+        }
+
+        function showProjectorView(promptText) {
+            document.body.classList.add('modal-is-active');
+            projectorPromptText.textContent = promptText;
+            // Apply master timer settings
+            timerMinutesInput.value = appSettings.timerMinutes || 5;
+            timerSecondsInput.value = appSettings.timerSeconds || 0;
+            resetTimer(); 
+            projectorView.classList.add('active');
+            if(appSettings.timerAutoStart) {
+                startPauseTimer();
+            }
+        }
+
+        function hideProjectorView() {
+            const projectorContent = projectorView.querySelector('.projector-content');
+            if (document.fullscreenElement === projectorContent) {
+                 document.exitFullscreen(); 
+            }
+            document.body.classList.remove('modal-is-active');
+            clearInterval(timerInterval); 
+            isTimerRunning = false;
+            projectorView.classList.add('is-exiting');
+            setTimeout(() => {
+                 projectorView.classList.remove('active', 'is-exiting');
+            }, animationDuration);
+        }
+
+        function showResetModal() { 
+            document.body.classList.add('modal-is-active');
+            resetModal.classList.add('active'); 
+        }
+        function hideResetModal() { 
+            document.body.classList.remove('modal-is-active');
+            resetModal.classList.add('is-exiting');
+            setTimeout(() => {
+                resetModal.classList.remove('active', 'is-exiting');
+            }, animationDuration);
+        }
+        function confirmReset() {
+            localStorage.removeItem('mindfulMorningsData');
+            localStorage.removeItem('mindfulMorningsVersion');
+            localStorage.removeItem('mindfulMorningsSettings');
+            window.location.reload();
+        }
+
+        function toggleFullscreen() {
+            const elem = document.querySelector('.projector-content');
+            if (document.fullscreenElement === elem) {
+                // If the projector is already fullscreen, exit.
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            } else {
+                // Otherwise, make the projector fullscreen.
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen();
+                } else if (elem.webkitRequestFullscreen) { /* Safari */
+                    elem.webkitRequestFullscreen();
+                } else if (elem.msRequestFullscreen) { /* IE11 */
+                    elem.msRequestFullscreen();
+                }
+            }
+        }
+
+        function toggleMainFullscreen() {
+            const elem = document.documentElement;
+            if (!document.fullscreenElement) {
+                elem.requestFullscreen().catch(err => {
+                    alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+        
+        document.addEventListener('fullscreenchange', () => {
+            const projectorContent = document.querySelector('.projector-content');
+            // Handle Projector fullscreen icon state
+            if (document.fullscreenElement === projectorContent) {
+                fullscreenIconOpen.style.display = 'none';
+                fullscreenIconClose.style.display = 'block';
+            } else {
+                fullscreenIconOpen.style.display = 'block';
+                fullscreenIconClose.style.display = 'none';
+            }
+
+            // Handle Main App fullscreen UI state
+            if (document.fullscreenElement === document.documentElement) {
+                document.body.classList.add('main-fullscreen-active');
+                mainFullscreenIconOpen.style.display = 'none';
+                mainFullscreenIconClose.style.display = 'block';
+            } else {
+                document.body.classList.remove('main-fullscreen-active');
+                mainFullscreenIconOpen.style.display = 'block';
+                mainFullscreenIconClose.style.display = 'none';
+            }
+        });
+
+
+        // --- Timer Logic ---
+        function updateTimerDisplay() {
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        function updateTimerFromInputs() {
+            if (isTimerRunning) return;
+            const minutes = parseInt(timerMinutesInput.value) || 0;
+            const seconds = parseInt(timerSecondsInput.value) || 0;
+            totalSeconds = (minutes * 60) + seconds;
+            updateTimerDisplay();
+        }
+
+        function startPauseTimer() {
+            if (isTimerRunning) { 
+                clearInterval(timerInterval);
+                isTimerRunning = false;
+                timerStartPauseBtn.textContent = 'Resume';
+            } else { 
+                if (Tone.context.state !== 'running') {
+                    Tone.context.resume();
+                }
+                isTimerRunning = true;
+                timerStartPauseBtn.textContent = 'Pause';
+                
+                if(totalSeconds <= 0) {
+                    updateTimerFromInputs();
+                }
+                
+                if (totalSeconds > 0) {
+                    timerInterval = setInterval(() => {
+                        totalSeconds--;
+                        updateTimerDisplay();
+                        if (totalSeconds <= 0) {
+                            clearInterval(timerInterval);
+                            isTimerRunning = false;
+                            timerStartPauseBtn.textContent = 'Start';
+                            timerDisplay.classList.add('timer-finished');
+                            
+                            let chimeCount = 0;
+                            const chimeInterval = setInterval(() => {
+                                if (chimeCount < 3) {
+                                    try {
+                                        const synth = new Tone.Synth().toDestination();
+                                        synth.triggerAttackRelease("C5", "8n");
+                                    } catch (e) { console.error("Could not play sound.", e); }
+                                    chimeCount++;
+                                } else {
+                                    clearInterval(chimeInterval);
+                                }
+                            }, 1000);
+
+                            setTimeout(() => timerDisplay.classList.remove('timer-finished'), 3000);
+                        }
+                    }, 1000);
+                } else {
+                    isTimerRunning = false;
+                    timerStartPauseBtn.textContent = 'Start';
+                }
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            timerStartPauseBtn.textContent = 'Start';
+            timerDisplay.classList.remove('timer-finished');
+            updateTimerFromInputs();
+        }
+
+        timerStartPauseBtn.addEventListener('click', startPauseTimer);
+        timerResetBtn.addEventListener('click', resetTimer);
+        timerMinutesInput.addEventListener('input', updateTimerFromInputs);
+        timerSecondsInput.addEventListener('input', updateTimerFromInputs);
+
+        // --- Settings Logic ---
+        function showSettingsModal() { 
+            document.body.classList.add('modal-is-active');
+            settingsModal.classList.add('active'); 
+        }
+        function hideSettingsModal() { 
+            document.body.classList.remove('modal-is-active');
+            settingsModal.classList.add('is-exiting');
+            setTimeout(() => {
+                settingsModal.classList.remove('active', 'is-exiting');
+            }, animationDuration);
+        }
+
+        function saveAppSettings() {
+            appSettings = {
+                defaultGradeBand: defaultGradeSelector.value,
+                timerMinutes: parseInt(masterTimerMinutesInput.value) || 0,
+                timerSeconds: parseInt(masterTimerSecondsInput.value) || 0,
+                timerAutoStart: masterTimerAutostartInput.checked
+            };
+            localStorage.setItem('mindfulMorningsSettings', JSON.stringify(appSettings));
+        }
+
+        function loadAppSettings() {
+            const savedSettings = localStorage.getItem('mindfulMorningsSettings');
+            if (savedSettings) {
+                appSettings = JSON.parse(savedSettings);
+                defaultGradeSelector.value = appSettings.defaultGradeBand || '3-5';
+                masterTimerMinutesInput.value = appSettings.timerMinutes || 5;
+                masterTimerSecondsInput.value = appSettings.timerSeconds || 0;
+                masterTimerAutostartInput.checked = appSettings.timerAutoStart || false;
+            } else {
+                // Default settings
+                defaultGradeSelector.value = '3-5';
+                masterTimerMinutesInput.value = 5;
+                masterTimerSecondsInput.value = 0;
+                masterTimerAutostartInput.checked = false;
+            }
+        }
+
+        function exportData() {
+            const dataStr = JSON.stringify(allPromptsData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: "application/json"});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'mindful-mornings-backup.json';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    // Basic validation
+                    if (importedData['k-2'] && importedData['3-5']) {
+                        allPromptsData = importedData;
+                        saveData();
+                        hideSettingsModal();
+                        // Reload view to reflect changes
+                        loadData(); // Reload all data and apply settings
+                    } else {
+                        alert("Invalid data file.");
+                    }
+                } catch (error) {
+                    alert("Error reading or parsing the file. Please make sure it's a valid backup file.");
+                    console.error("Import error:", error);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        settingsBtn.addEventListener('click', showSettingsModal);
+        defaultGradeSelector.addEventListener('change', saveAppSettings);
+        masterTimerMinutesInput.addEventListener('change', saveAppSettings);
+        masterTimerSecondsInput.addEventListener('change', saveAppSettings);
+        masterTimerAutostartInput.addEventListener('change', saveAppSettings);
+        exportDataBtn.addEventListener('click', exportData);
+        importDataBtn.addEventListener('click', () => importFileInput.click());
+        importFileInput.addEventListener('change', importData);
+
+        function generateSinglePdf(promptText, traitName) {
+            const doc = new jsPDF();
+            const pageHeight = doc.internal.pageSize.height;
+            const pageWidth = doc.internal.pageSize.width;
+            doc.setFontSize(14);
+            const splitPrompt = doc.splitTextToSize(promptText, pageWidth - 40);
+            doc.text(splitPrompt, 20, 30);
+            let currentY = 60;
+            doc.setLineCap('butt');
+            doc.setLineWidth(0.5);
+            doc.setDrawColor("#cccccc");
+            while(currentY < pageHeight - 20) {
+                doc.line(20, currentY, pageWidth - 20, currentY);
+                currentY += 10;
+            }
+            doc.save(`${traitName}-Prompt.pdf`);
+        }
+
+        function generateWeeklyPdf(weekData) {
+            const doc = new jsPDF();
+            const pageHeight = doc.internal.pageSize.height;
+            const pageWidth = doc.internal.pageSize.width;
+            weekData.prompts.forEach((prompt, index) => {
+                if (index > 0) {
+                    doc.addPage();
+                }
+                doc.setFontSize(14);
+                const splitPrompt = doc.splitTextToSize(prompt, pageWidth - 40);
+                doc.text(splitPrompt, 20, 30);
+                let currentY = 60;
+                doc.setLineCap('butt');
+                doc.setLineWidth(0.5);
+                doc.setDrawColor("#cccccc");
+                while(currentY < pageHeight - 20) {
+                    doc.line(20, currentY, pageWidth - 20, currentY);
+                    currentY += 10;
+                }
+            });
+            doc.save(`${weekData.trait}-WeeklyPrompts.pdf`);
+        }
+
+        window.onload = () => {
+            loadAppSettings();
+            loadData();
+        };
+    </script>
+
+</body>
+</html>
